@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Support\ServiceProvider;
+use App\Console\Commands\ModelMakeCommand;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,8 +16,12 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         if ($this->app->isLocal()) {
-            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+            $this->app->register(IdeHelperServiceProvider::class);
         }
+
+        $this->app->extend('command.model.make', function ($command, $app) {
+            return new ModelMakeCommand($app['files']);
+        });
     }
 
     /**
