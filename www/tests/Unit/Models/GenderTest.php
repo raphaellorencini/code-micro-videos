@@ -1,14 +1,11 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Models;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use PHPUnit\Framework\TestCase;
 
 class GenderTest extends TestCase
 {
-    use DatabaseMigrations;
-
     public function testExample()
     {
         $this->assertTrue(true);

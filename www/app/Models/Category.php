@@ -18,6 +18,10 @@ class Category extends Model
         'deleted_at',
     ];
 
+    protected $casts = [
+        'id' => 'string',
+        'is_active' => 'boolean',
+    ];
     protected $fillable = [
         'name',
         'description',

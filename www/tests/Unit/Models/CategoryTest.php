@@ -1,49 +1,64 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Models;
 
 use App\Models\Category;
 use App\Models\Traits\Uuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use PHPUnit\Framework\TestCase;
 
 class CategoryTest extends TestCase
 {
-    use DatabaseMigrations;
+    private $category;
+
+    public static function setUpBeforeClass(): void
+    {
+        parent::setUpBeforeClass();
+    }
+
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->category = new Category();
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+    }
 
     public function testFillableAttribute()
     {
-        Category::create(['name' => 'aaa']);
-
         $expectedFillable = [
             'name',
             'description',
             'is_active',
         ];
         $category = new Category();
-        $this->assertEquals($expectedFillable, $category->getFillable());
+        $this->assertEquals($expectedFillable, $this->category->getFillable());
     }
 
     public function testCastsAttribute()
     {
-        $expected = 'string';
-        $category = new Category();
-        $this->assertEquals($expected, $category->getKeyType());
+        $expected = [
+            'id' => 'string',
+            'is_active' => 'boolean',
+        ];
+        $this->assertEquals($expected, $this->category->getCasts());
     }
 
     public function testIncrementingAttribute()
     {
         $expected = false;
-        $category = new Category();
-        $this->assertFalse($category->incrementing);
+        $this->assertFalse($this->category->incrementing);
     }
 
     public function testDatesAttribute()
     {
         $dates = ['created_at', 'updated_at', 'deleted_at'];
-        $category = new Category();
-        $categoryDates = $category->getDates();
+        $categoryDates = $this->category->getDates();
         foreach ($dates as $date) {
             $this->assertContains($date, $categoryDates);
         }
