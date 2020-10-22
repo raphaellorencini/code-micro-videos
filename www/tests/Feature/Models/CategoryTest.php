@@ -23,58 +23,68 @@ class CategoryTest extends TestCase
 
     public function testCreate()
     {
-        $category = Category::create([
+        $obj = Category::create([
             'name' => 'teste1',
         ]);
-        $category->refresh();
-        $this->assertEquals('teste1', $category->name);
-        $this->assertNull($category->description);
-        $this->assertTrue($category->is_active);
+        $obj->refresh();
+        $this->assertEquals(36, strlen($obj->id));
+        $this->assertEquals('teste1', $obj->name);
+        $this->assertNull($obj->description);
+        $this->assertTrue($obj->is_active);
 
-        $category = Category::create([
+        $obj = Category::create([
             'name' => 'teste'.rand(1000, 9999),
             'description' => null,
         ]);
-        $this->assertNull($category->description);
+        $this->assertNull($obj->description);
 
-        $category = Category::create([
+        $obj = Category::create([
             'name' => 'teste'.rand(1000, 9999),
             'description' => 'teste descrição',
         ]);
-        $this->assertEquals('teste descrição', $category->description);
+        $this->assertEquals('teste descrição', $obj->description);
 
-        $category = Category::create([
+        $obj = Category::create([
             'name' => 'teste'.rand(1000, 9999),
             'is_active' => false,
         ]);
-        $this->assertFalse($category->is_active);
+        $this->assertFalse($obj->is_active);
 
-        $category = Category::create([
+        $obj = Category::create([
             'name' => 'teste'.rand(1000, 9999),
             'is_active' => true,
         ]);
-        $this->assertTrue($category->is_active);
+        $this->assertTrue($obj->is_active);
     }
 
     public function testUpdate()
     {
-        /** @var Category $category */
-        $category = factory(Category::class, 1)->create([
+        /** @var Category $obj */
+        $obj = factory(Category::class)->create([
             'description' => 'test_description',
             'is_active' => false,
-        ])->first();
+        ]);
 
         $data = [
             'name' => 'teste_name_updated',
             'description' => 'test_description_updated',
             'is_active' => true,
         ];
-        $category->update($data);
+        $obj->update($data);
 
         foreach ($data as $key => $value) {
-            $this->assertEquals($value, $category->{$key});
+            $this->assertEquals($value, $obj->{$key});
         }
+    }
 
+    public function testDelete()
+    {
+        /** @var Category $obj */
+        $obj = factory(Category::class)->create();
+        $obj->delete();
+        $this->assertNull(Category::find($obj->id));
 
+        $obj->restore();
+        $this->assertNotNull(Category::find($obj->id));
     }
 }

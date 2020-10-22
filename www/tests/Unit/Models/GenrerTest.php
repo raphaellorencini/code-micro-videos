@@ -2,14 +2,14 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\Category;
+use App\Models\Genre;
 use App\Models\Traits\Uuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use PHPUnit\Framework\TestCase;
 
-class CategoryTest extends TestCase
+class GenrerTest extends TestCase
 {
-    private $category;
+    private $genrer;
 
     public static function setUpBeforeClass(): void
     {
@@ -20,7 +20,7 @@ class CategoryTest extends TestCase
     {
         parent::setUp();
 
-        $this->category = new Category();
+        $this->genrer = new Genre();
     }
 
     protected function tearDown(): void
@@ -32,11 +32,9 @@ class CategoryTest extends TestCase
     {
         $expectedFillable = [
             'name',
-            'description',
             'is_active',
         ];
-        $category = new Category();
-        $this->assertEquals($expectedFillable, $this->category->getFillable());
+        $this->assertEquals($expectedFillable, $this->genrer->getFillable());
     }
 
     public function testCastsAttribute()
@@ -45,23 +43,23 @@ class CategoryTest extends TestCase
             'id' => 'string',
             'is_active' => 'boolean',
         ];
-        $this->assertEquals($expected, $this->category->getCasts());
+        $this->assertEquals($expected, $this->genrer->getCasts());
     }
 
     public function testIncrementingAttribute()
     {
         $expected = false;
-        $this->assertFalse($this->category->incrementing);
+        $this->assertFalse($this->genrer->incrementing);
     }
 
     public function testDatesAttribute()
     {
         $dates = ['created_at', 'updated_at', 'deleted_at'];
-        $categoryDates = $this->category->getDates();
+        $genrerDates = $this->genrer->getDates();
         foreach ($dates as $date) {
-            $this->assertContains($date, $categoryDates);
+            $this->assertContains($date, $genrerDates);
         }
-        $this->assertCount(count($dates), $categoryDates);
+        $this->assertCount(count($dates), $genrerDates);
     }
 
     public function testIfUseTraits()
@@ -70,7 +68,7 @@ class CategoryTest extends TestCase
             SoftDeletes::class,
             Uuid::class,
         ];
-        $categoryTraits = array_keys(class_uses(Category::class));
-        $this->assertEquals($traits, $categoryTraits);
+        $genrerTraits = array_keys(class_uses(Genre::class));
+        $this->assertEquals($traits, $genrerTraits);
     }
 }

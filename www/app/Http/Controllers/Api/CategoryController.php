@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        return Category::paginate();
+        return Category::all();
     }
 
     public function store(CategoryRequest $request)
