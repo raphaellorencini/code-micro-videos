@@ -7,9 +7,9 @@ steps:
     name: "gcr.io/cloud-builders/docker"
     args: [ "logs", "micro-videos-app"]
 
-#  - id: "Chown in /var/www"
-#    name: "gcr.io/cloud-builders/docker"
-#    args: ["exec", "-u", "root", "-t", "micro-videos-app", "chown", "-R", "www-data:www-data", "/var/www"]
+  - id: "Chown in /var/www"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["exec", "-u", "root", "-t", "micro-videos-app", "chown", "-R", "www-data:www-data", "/var/www"]
 
   - id: "Rodando composer"
     name: "gcr.io/cloud-builders/docker"
