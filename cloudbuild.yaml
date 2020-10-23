@@ -13,7 +13,7 @@ steps:
 
   - id: "Rodando composer"
     name: "gcr.io/cloud-builders/docker"
-    args: ["exec", "-u", "root", "-t", "micro-videos-app", "/usr/local/bin/composer", "install"]
+    args: ["exec", "-u", "root", "-t", "micro-videos-app", "composer", "install"]
 
   - id: "Copiando o .env"
     name: "gcr.io/cloud-builders/docker"
