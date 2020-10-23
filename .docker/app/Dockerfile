@@ -25,7 +25,9 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 ADD .docker/app/.env /templates/.env
+ADD .docker/app/.env.example /templates/.env.example
 ADD .docker/app/.env.testing /templates/.env.testing
+ADD .docker/app/.env.testing.example /templates/.env.testing.example
 ADD .docker/app/entrypoint.sh /entrypoint.sh
 RUN chmod -R 775 /entrypoint.sh
 
