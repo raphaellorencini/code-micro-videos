@@ -3,34 +3,34 @@ steps:
     name: "gcr.io/$PROJECT_ID/docker-compose:1.25.5"
     args: ["-f", "docker-compose.yaml", "up", "-d"]
 
-  - id: "Chown in /var/www"
-    name: "gcr.io/cloud-builders/docker"
-    args: ["exec", "-u", "root", "-t", "micro-videos-app", "chown", "-R", "www-data:www-data", "/var/www"]
-
   - id: "Rodando logs"
     name: "gcr.io/cloud-builders/docker"
     args: [ "logs", "micro-videos-app"]
 
+#  - id: "Chown in /var/www"
+#    name: "gcr.io/cloud-builders/docker"
+#    args: ["exec", "-u", "root", "-t", "micro-videos-app", "chown", "-R", "www-data:www-data", "/var/www"]
+
   - id: "Rodando composer"
     name: "gcr.io/cloud-builders/docker"
-    args: ["exec", "-t", "micro-videos-app", "/usr/local/bin/composer", "install"]
+    args: ["exec", "-u", "root", "-t", "micro-videos-app", "/usr/local/bin/composer", "install"]
 
   - id: "Copiando o .env"
     name: "gcr.io/cloud-builders/docker"
-    args: ["exec", "-t", "micro-videos-app", "cp", ".env.example", ".env"]
+    args: ["exec", "-u", "root", "-t", "micro-videos-app", "cp", ".env.example", ".env"]
 
   - id: "Copiando o .env.testing"
     name: "gcr.io/cloud-builders/docker"
-    args: [ "exec", "-t", "micro-videos-app", "cp", ".env.testing.example", ".env.testing"]
+    args: [ "exec", "-u", "root", "-t", "micro-videos-app", "cp", ".env.testing.example", ".env.testing"]
 
   - id: "Rodando key:generate"
     name: "gcr.io/cloud-builders/docker"
-    args: [ "exec", "-t", "micro-videos-app", "php", "/var/www/artisan", "key:generate"]
+    args: [ "exec", "-u", "root", "-t", "micro-videos-app", "php", "/var/www/artisan", "key:generate"]
 
   - id: "Rodando migrations"
     name: "gcr.io/cloud-builders/docker"
-    args: [ "exec", "-t", "micro-videos-app", "php", "/var/www/artisan", "migrate"]
+    args: [ "exec", "-u", "root", "-t", "micro-videos-app", "php", "/var/www/artisan", "migrate"]
 
   - id: "Rodando PHP Unit"
     name: "gcr.io/cloud-builders/docker"
-    args: ["exec", "-t", "micro-videos-app", "php", "/var/www/vendor/bin/phpunit", "-c", "/var/www/phpunit.xml"]
+    args: ["exec", "-u", "root", "-t", "micro-videos-app", "php", "/var/www/vendor/bin/phpunit", "-c", "/var/www/phpunit.xml"]
