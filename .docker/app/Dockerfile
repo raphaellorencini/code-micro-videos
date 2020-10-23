@@ -27,6 +27,7 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 ADD .docker/app/.env /templates/.env
 ADD .docker/app/.env.testing /templates/.env.testing
 ADD .docker/app/entrypoint.sh /entrypoint.sh
+ADD .docker/app/entrypoint.prod.sh /entrypoint.prod.sh
 RUN chmod -R 775 /entrypoint.sh
 
 USER www-data
