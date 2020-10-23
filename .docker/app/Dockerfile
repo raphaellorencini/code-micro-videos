@@ -29,5 +29,6 @@ ADD .docker/app/.env.testing /templates/.env.testing
 ADD .docker/app/entrypoint.sh /entrypoint.sh
 ADD .docker/app/entrypoint.prod.sh /entrypoint.prod.sh
 RUN chmod -R 775 /entrypoint.sh
+RUN chmod -R 775 /entrypoint.prod.sh
 
 USER www-data
