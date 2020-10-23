@@ -28,6 +28,7 @@ class CategoryTest extends TestCase
         ]);
         $obj->refresh();
         $this->assertEquals(36, strlen($obj->id));
+        $this->assertRegExp('/[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}/', $obj->id);
         $this->assertEquals('teste1', $obj->name);
         $this->assertNull($obj->description);
         $this->assertTrue($obj->is_active);
