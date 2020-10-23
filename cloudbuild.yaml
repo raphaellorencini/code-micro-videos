@@ -7,6 +7,10 @@ steps:
 #    name: "gcr.io/cloud-builders/docker"
 #    args: ["exec", "-u", "root", "-t", "micro-videos-app", "chown", "-R", "www-data:www-data", "/var/www"]
 
+  - id: "Rodando logs"
+    name: "gcr.io/cloud-builders/docker"
+    args: [ "logs", "micro-videos-app"]
+
   - id: "Rodando composer"
     name: "gcr.io/cloud-builders/docker"
     args: ["exec", "-t", "micro-videos-app", "/usr/local/bin/composer", "install"]
