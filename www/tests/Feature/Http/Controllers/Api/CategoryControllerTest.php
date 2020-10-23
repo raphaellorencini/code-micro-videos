@@ -8,10 +8,27 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Tests\Traits\TestValidations;
 
 class CategoryControllerTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseMigrations, TestValidations;
+
+    private function assertInvalidationRequired(TestResponse $response)
+    {
+        $this->assertsInvalidationFields($response, ['name'], 'required');
+        $response->assertJsonMissingValidationErrors(['is_active']);
+    }
+
+    private function assertInvalidationMax(TestResponse $response)
+    {
+        $this->assertsInvalidationFields($response, ['name'], 'max.string', ['max' => 255]);
+    }
+
+    private function assertInvalidationBoolean(TestResponse $response)
+    {
+        $this->assertsInvalidationFields($response, ['is_active'], 'boolean');
+    }
 
     public function testIndex()
     {
@@ -45,7 +62,6 @@ class CategoryControllerTest extends TestCase
         $this->assertInvalidationMax($response);
         $this->assertInvalidationBoolean($response);
 
-
         $obj = factory(Category::class)->create();
         $response = $this->json('PUT', route('api.categories.update', ['category' => $obj->id]), []);
         $this->assertInvalidationRequired($response);
@@ -56,37 +72,6 @@ class CategoryControllerTest extends TestCase
         ]);
         $this->assertInvalidationMax($response);
         $this->assertInvalidationBoolean($response);
-    }
-
-    private function assertInvalidationRequired(TestResponse $response)
-    {
-        $response
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['name'])
-            ->assertJsonMissingValidationErrors(['is_active'])
-            ->assertJsonFragment([
-                trans('validation.required', ['attribute' => 'name']),
-            ]);
-    }
-
-    private function assertInvalidationMax(TestResponse $response)
-    {
-        $response
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['name'])
-            ->assertJsonFragment([
-                trans('validation.max.string', ['attribute' => 'name', 'max' => 255]),
-            ]);
-    }
-
-    private function assertInvalidationBoolean(TestResponse $response)
-    {
-        $response
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['is_active'])
-            ->assertJsonFragment([
-                trans('validation.boolean', ['attribute' => 'is active']),
-            ]);
     }
 
     public function testStore()
@@ -143,5 +128,14 @@ class CategoryControllerTest extends TestCase
             ->assertJsonFragment([
                 'description' => null,
             ]);
+    }
+
+    public function testDestroy()
+    {
+        $obj = factory(Category::class)->create();
+        $response = $this->json('DELETE', route('api.categories.destroy', ['category' => $obj->id]));
+        $response->assertStatus(204);
+        $this->assertNull(Category::find($obj->id));
+        $this->assertNotNull(Category::withTrashed()->find($obj->id));
     }
 }
