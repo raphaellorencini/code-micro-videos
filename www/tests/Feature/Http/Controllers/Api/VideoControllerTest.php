@@ -208,7 +208,7 @@ class VideoControllerTest extends TestCase
             ->andThrow(new TestException());
 
         $request = \Mockery::mock(Request::class);
-        
+
         try {
             $controller->store($request);
         } catch (TestException $e) {
