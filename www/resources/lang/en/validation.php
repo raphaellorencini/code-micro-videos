@@ -147,4 +147,6 @@ return [
 
     'attributes' => [],
 
+    'genres_has_categories' => 'A genre ID must be related at least a category ID.',
+
 ];

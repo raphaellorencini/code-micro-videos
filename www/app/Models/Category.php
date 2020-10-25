@@ -29,4 +29,9 @@ class Category extends Model
         'description',
         'is_active',
     ];
+
+    public function genres()
+    {
+        return $this->belongsToMany(Genre::class)->withTrashed();
+    }
 }

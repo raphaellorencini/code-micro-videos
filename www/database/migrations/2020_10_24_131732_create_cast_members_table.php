@@ -15,7 +15,7 @@ class CreateCastMembersTable extends Migration
     {
         Schema::create('cast_members', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name')->unique();
+            $table->string('name');
             $table->smallInteger('type');
             $table->softDeletes();
             $table->timestamps();
