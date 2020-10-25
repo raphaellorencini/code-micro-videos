@@ -7,6 +7,11 @@ use Illuminate\Foundation\Testing\TestResponse;
 
 trait TestValidations
 {
+    use TestParameters;
+
+    protected abstract function model();
+    protected abstract function route(string $routeName, array $params = []);
+
     protected function assertInvalidationStoreAction(array $data, string $rule, array $ruleParams = [])
     {
         $response = $this->json('POST', $this->route('store'), $data);
@@ -16,7 +21,7 @@ trait TestValidations
 
     protected function assertInvalidationUpdateAction(array $data, string $rule, array $ruleParams = [])
     {
-        $response = $this->json('PUT', $this->route('update', ['category' => $this->category->id]), $data);
+        $response = $this->json('PUT', $this->route('update', $this->routeUpdateParam), $data);
         $fields = array_keys($data);
         $this->assertsInvalidationFields($response, $fields, $rule, $ruleParams);
     }

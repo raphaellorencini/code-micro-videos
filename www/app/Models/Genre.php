@@ -13,6 +13,12 @@ class Genre extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
     protected $casts = [
         'id' => 'string',
         'is_active' => 'boolean',

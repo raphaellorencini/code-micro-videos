@@ -6,9 +6,12 @@ use App\Models\Traits\Uuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Category extends Model
+class CastMember extends Model
 {
     use SoftDeletes, Uuid;
+
+    const TYPE_DIRECTOR = 1;
+    const TYPE_ACTOR = 2;
 
     public $incrementing = false;
     protected $keyType = 'string';
@@ -21,12 +24,19 @@ class Category extends Model
 
     protected $casts = [
         'id' => 'string',
-        'is_active' => 'boolean',
+        'type' => 'int',
     ];
 
     protected $fillable = [
         'name',
-        'description',
-        'is_active',
+        'type',
     ];
+
+    public static function types()
+    {
+        return [
+            self::TYPE_DIRECTOR,
+            self::TYPE_ACTOR,
+        ];
+    }
 }

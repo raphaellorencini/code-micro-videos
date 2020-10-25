@@ -2,14 +2,14 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\Category;
+use App\Models\CastMember;
 use App\Models\Traits\Uuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use PHPUnit\Framework\TestCase;
 
-class CategoryTest extends TestCase
+class CastMemberUnitTest extends TestCase
 {
-    private $category;
+    private $castMember;
 
     public static function setUpBeforeClass(): void
     {
@@ -20,7 +20,7 @@ class CategoryTest extends TestCase
     {
         parent::setUp();
 
-        $this->category = new Category();
+        $this->castMember = new CastMember();
     }
 
     protected function tearDown(): void
@@ -32,36 +32,33 @@ class CategoryTest extends TestCase
     {
         $expectedFillable = [
             'name',
-            'description',
-            'is_active',
+            'type',
         ];
-        $category = new Category();
-        $this->assertEquals($expectedFillable, $this->category->getFillable());
+        $this->assertEquals($expectedFillable, $this->castMember->getFillable());
     }
 
     public function testCastsAttribute()
     {
         $expected = [
             'id' => 'string',
-            'is_active' => 'boolean',
+            'type' => 'int',
         ];
-        $this->assertEquals($expected, $this->category->getCasts());
+        $this->assertEquals($expected, $this->castMember->getCasts());
     }
 
     public function testIncrementingAttribute()
     {
-        $expected = false;
-        $this->assertFalse($this->category->incrementing);
+        $this->assertFalse($this->castMember->incrementing);
     }
 
     public function testDatesAttribute()
     {
         $dates = ['created_at', 'updated_at', 'deleted_at'];
-        $categoryDates = $this->category->getDates();
+        $castMemberDates = $this->castMember->getDates();
         foreach ($dates as $date) {
-            $this->assertContains($date, $categoryDates);
+            $this->assertContains($date, $castMemberDates);
         }
-        $this->assertCount(count($dates), $categoryDates);
+        $this->assertCount(count($dates), $castMemberDates);
     }
 
     public function testIfUseTraits()
@@ -70,7 +67,7 @@ class CategoryTest extends TestCase
             SoftDeletes::class,
             Uuid::class,
         ];
-        $categoryTraits = array_keys(class_uses(Category::class));
-        $this->assertEquals($traits, $categoryTraits);
+        $castMemberTraits = array_keys(class_uses(CastMember::class));
+        $this->assertEquals($traits, $castMemberTraits);
     }
 }
