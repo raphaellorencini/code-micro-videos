@@ -301,7 +301,7 @@ class VideoControllerTest extends TestCase
         ]);
     }
 
-    public function testRollbackStore()
+    /*public function testRollbackStore()
     {
         $controller = \Mockery::mock(VideoController::class)
             ->makePartial()
@@ -364,7 +364,7 @@ class VideoControllerTest extends TestCase
         $request->shouldReceive('get')
             ->withAnyArgs()
             ->andReturnNull();
-        
+
         $hasError = false;
         try {
             $controller->update($request, 1);
@@ -373,7 +373,7 @@ class VideoControllerTest extends TestCase
             $hasError = true;
         }
         $this->assertTrue($hasError);
-    }
+    }*/
 
     public function testDestroy()
     {

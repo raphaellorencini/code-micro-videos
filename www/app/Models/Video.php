@@ -38,6 +38,53 @@ class Video extends Model
         'duration',
     ];
 
+    public static function create(array $attributes = [])
+    {
+        $obj = null;
+        try {
+            \DB::beginTransaction();
+            $obj = static::query()->create($attributes);
+            static::handleRelations($obj, $attributes);
+            \DB::commit();
+        } catch (\Exception $e) {
+            if(filled($obj)) {
+
+            }
+            \DB::rollBack();
+            throw $e;
+        }
+        return $obj;
+    }
+
+    public function update(array $attributes = [], array $options = [])
+    {
+        $saved = false;
+        try {
+            \DB::beginTransaction();
+            $saved = parent::update($attributes, $options);
+            static::handleRelations($this, $attributes);
+            \DB::commit();
+        } catch (\Exception $e) {
+            if($saved) {
+
+            }
+            \DB::rollBack();
+            throw $e;
+        }
+        return $saved;
+    }
+
+    public static function handleRelations(Video $video, array $attributes)
+    {
+        $attributes = collect($attributes);
+        if($attributes->has('categories_id')) {
+            $video->categories()->sync($attributes->get('categories_id'));
+        }
+        if($attributes->has('genres_id')) {
+            $video->genres()->sync($attributes->get('genres_id'));
+        }
+    }
+
     public function categories()
     {
         return $this->belongsToMany(Category::class)->withTrashed();

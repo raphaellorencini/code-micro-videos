@@ -2,7 +2,10 @@
 
 namespace Tests\Feature\Models;
 
+use App\Models\Category;
+use App\Models\Genre;
 use App\Models\Video;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -11,6 +14,37 @@ use Tests\TestCase;
 class VideoTest extends TestCase
 {
     use DatabaseMigrations;
+
+    private $data;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->data = [
+            'title' => 'title',
+            'description' => 'description',
+            'year_launched' => 2010,
+            'rating' => Video::RATING_LIST[0],
+            'duration' => 90,
+        ];
+    }
+
+    protected function assertHasCategory($videoId, $categoryId)
+    {
+        $this->assertDatabaseHas('category_video', [
+            'video_id' => $videoId,
+            'category_id' => $categoryId,
+        ]);
+    }
+
+    protected function assertHasGenre($videoId, $genreId)
+    {
+        $this->assertDatabaseHas('genre_video', [
+            'video_id' => $videoId,
+            'genre_id' => $genreId,
+        ]);
+    }
 
     public function testList()
     {
@@ -32,66 +66,61 @@ class VideoTest extends TestCase
         ], $videosKeys);
     }
 
-    public function testCreate()
+    public function testCreateWithBasicFields()
     {
-        $obj = Video::create([
-            'title' => 'title2',
-            'description' => 'description',
-            'year_launched' => 2020,
-            'rating' => Video::RATING_LIST[1],
-            'duration' => 30,
-        ]);
+        $obj = Video::create($this->data);
         $obj->refresh();
         $this->assertEquals(36, strlen($obj->id));
         $this->assertRegExp('/[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}/', $obj->id);
-        $this->assertEquals('title2', $obj->title);
-        $this->assertEquals('description', $obj->description);
-        $this->assertEquals(2020, $obj->year_launched);
-        $this->assertEquals(Video::RATING_LIST[1], $obj->rating);
-        $this->assertEquals(30, $obj->duration);
         $this->assertFalse($obj->opened);
+        $this->assertDatabaseHas('videos', $this->data + ['opened' => false]);
 
-
-        $obj = Video::create([
-            'title' => 'title',
-            'description' => 'description',
-            'year_launched' => 2010,
-            'rating' => Video::RATING_LIST[0],
-            'duration' => 90,
-            'opened' => true,
-        ]);
+        $obj = Video::create($this->data + ['opened' => true]);
         $obj->refresh();
-        $this->assertEquals('title', $obj->title);
-        $this->assertNotNull($obj->description);
-        $this->assertIsInt($obj->year_launched);
-        $this->assertEquals(Video::RATING_LIST[0], $obj->rating);
-        $this->assertEquals(90, $obj->duration);
         $this->assertTrue($obj->opened);
+        $this->assertDatabaseHas('videos', $this->data + ['opened' => true]);
     }
 
-    public function testUpdate()
+    public function testCreateWithRelations()
     {
-        /** @var Video $obj */
-        $obj = factory(Video::class)->create([
-            'title' => 'title2',
-            'description' => 'description2',
-            'year_launched' => 2019,
-            'rating' => Video::RATING_LIST[1],
-            'duration' => 30,
-        ]);
+        $category = factory(Category::class)->create();
+        $genre = factory(Genre::class)->create();
+        $video = Video::create($this->data + [
+                'categories_id' => [$category->id],
+                'genres_id' => [$genre->id],
+            ]
+        );
 
-        $data = [
-            'title' => 'title3',
-            'description' => 'description3',
-            'year_launched' => 2019,
-            'rating' => Video::RATING_LIST[2],
-            'duration' => 60,
-        ];
-        $obj->update($data);
+        $this->assertHasCategory($video->id, $category->id);
+        $this->assertHasGenre($video->id, $genre->id);
+    }
 
-        foreach ($data as $key => $value) {
-            $this->assertEquals($value, $obj->{$key});
-        }
+    public function testUpdateWithBasicFields()
+    {
+        $obj = factory(Video::class)->create(['opened' => false]);
+        $obj->update($this->data);
+        $this->assertFalse($obj->opened);
+        $this->assertDatabaseHas('videos', $this->data + ['opened' => false]);
+
+        $obj = factory(Video::class)->create(['opened' => true]);
+        $obj->update($this->data);
+        $this->assertTrue($obj->opened);
+        $this->assertDatabaseHas('videos', $this->data + ['opened' => true]);
+    }
+
+    public function testUpdateWithRelations()
+    {
+        $category = factory(Category::class)->create();
+        $genre = factory(Genre::class)->create();
+        $video = factory(Video::class)->create();
+        $video->update($this->data + [
+                'categories_id' => [$category->id],
+                'genres_id' => [$genre->id],
+            ]
+        );
+
+        $this->assertHasCategory($video->id, $category->id);
+        $this->assertHasGenre($video->id, $genre->id);
     }
 
     public function testDelete()
@@ -103,5 +132,47 @@ class VideoTest extends TestCase
 
         $obj->restore();
         $this->assertNotNull(Video::find($obj->id));
+    }
+
+    public function testRollbackCreate()
+    {
+        $hasError = false;
+        try {
+            Video::create([
+                'title' => 'title',
+                'description' => 'description',
+                'year_launched' => 2010,
+                'rating' => Video::RATING_LIST[0],
+                'duration' => 90,
+                'categories_id' => [0, 1, 2],
+            ]);
+        } catch (QueryException $e) {
+            $this->assertCount(0, Video::all());
+            $hasError = true;
+        }
+        $this->assertTrue($hasError);
+    }
+
+    public function testRollbackUpdate()
+    {
+        $video = factory(Video::class)->create();
+        $oldTitle = $video->title;
+        $hasError = false;
+        try {
+            $video->update([
+                'title' => 'title',
+                'description' => 'description',
+                'year_launched' => 2010,
+                'rating' => Video::RATING_LIST[0],
+                'duration' => 90,
+                'categories_id' => [0, 1, 2],
+            ]);
+        } catch (QueryException $e) {
+            $this->assertDatabaseHas('videos', [
+                'title' => $oldTitle,
+            ]);
+            $hasError = true;
+        }
+        $this->assertTrue($hasError);
     }
 }
