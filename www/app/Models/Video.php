@@ -38,6 +38,7 @@ class Video extends Model
         'rating',
         'duration',
         'video_file',
+        'thumb_file',
     ];
 
     public static $fileFields = ['video_file', 'thumb_file'];
@@ -55,7 +56,7 @@ class Video extends Model
             \DB::commit();
         } catch (\Exception $e) {
             if(filled($obj)) {
-
+                $obj->deleteFiles($files);
             }
             \DB::rollBack();
             throw $e;
@@ -66,10 +67,14 @@ class Video extends Model
     public function update(array $attributes = [], array $options = [])
     {
         $saved = false;
+        $files = self::extractFiles($attributes);
         try {
             \DB::beginTransaction();
             $saved = parent::update($attributes, $options);
             static::handleRelations($this, $attributes);
+            if($saved) {
+                $this->uploadFiles($files);
+            }
             \DB::commit();
         } catch (\Exception $e) {
             if($saved) {

@@ -16,6 +16,7 @@ class VideoTest extends TestCase
     use DatabaseMigrations;
 
     private $data;
+    private $fileFieldsData = [];
 
     protected function setUp(): void
     {
@@ -28,6 +29,10 @@ class VideoTest extends TestCase
             'rating' => Video::RATING_LIST[0],
             'duration' => 90,
         ];
+
+        foreach (Video::$fileFields as $fileField) {
+            $this->fileFieldsData[$fileField] = "{$fileField}.test";
+        }
     }
 
     protected function assertHasCategory($videoId, $categoryId)
@@ -68,7 +73,7 @@ class VideoTest extends TestCase
 
     public function testCreateWithBasicFields()
     {
-        $obj = Video::create($this->data);
+        $obj = Video::create($this->data + $this->fileFieldsData);
         $obj->refresh();
         $this->assertEquals(36, strlen($obj->id));
         $this->assertRegExp('/[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}/', $obj->id);
@@ -98,7 +103,7 @@ class VideoTest extends TestCase
     public function testUpdateWithBasicFields()
     {
         $obj = factory(Video::class)->create(['opened' => false]);
-        $obj->update($this->data);
+        $obj->update($this->data + $this->fileFieldsData);
         $this->assertFalse($obj->opened);
         $this->assertDatabaseHas('videos', $this->data + ['opened' => false]);
 
