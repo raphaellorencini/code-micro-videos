@@ -11,6 +11,8 @@ class UploadFilesStub extends Model
 {
     use UploadFiles;
 
+    public static $fileFields = ['file1', 'file2'];
+
     /*public static function createTable()
     {
         Schema::create('videos_stubs', function (Blueprint $table) {
