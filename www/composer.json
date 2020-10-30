@@ -13,7 +13,8 @@
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
         "laravel/ui": "^1.0",
-        "nikic/php-parser": "1.x-dev"
+        "nikic/php-parser": "1.x-dev",
+        "superbalist/laravel-google-cloud-storage": "^2.2"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.8",

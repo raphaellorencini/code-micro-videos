@@ -1,27 +1,30 @@
 <?php
 
-namespace Tests\Unit\Models\Traits;
+namespace Tests\Prod\Models\Traits;
 
-use App\Models\Traits\Uuid;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\UploadedFile;
 use PHPUnit\Framework\TestCase;
 use Tests\Stubs\Models\UploadFilesStub;
+use Tests\Traits\TestProd;
+use Tests\Traits\TestStorages;
 
-class UploadFilesUnitTest extends TestCase
+class UploadFilesProdTest extends TestCase
 {
+    use TestStorages, TestProd;
+
     private $obj;
 
     protected function setUp(): void
     {
         parent::setUp();
-
+        $this->skipTestIfNotProd();
+        \Config::set('filesystems.default', 'gcs');
         $this->obj = new UploadFilesStub();
+        $this->deleteAllFiles();
     }
 
     public function testUploadFile()
     {
-        \Storage::fake();
         $file = UploadedFile::fake()->create('video.mp4');
         $this->obj->uploadFile($file);
         \Storage::assertExists("1/{$file->hashName()}");
@@ -29,7 +32,6 @@ class UploadFilesUnitTest extends TestCase
 
     public function testUploadFiles()
     {
-        \Storage::fake();
         $file1 = UploadedFile::fake()->create('video1.mp4');
         $file2 = UploadedFile::fake()->create('video2.mp4');
         $this->obj->uploadFiles([$file1, $file2]);
@@ -39,7 +41,6 @@ class UploadFilesUnitTest extends TestCase
 
     public function testUploadDeleteFile()
     {
-        \Storage::fake();
         $file = UploadedFile::fake()->create('video.mp4');
         $this->obj->uploadFile($file);
         $filename = $file->hashName();
@@ -54,7 +55,6 @@ class UploadFilesUnitTest extends TestCase
 
     public function testDeleteOldFiles()
     {
-        \Storage::fake();
         $file1 = UploadedFile::fake()->create('video1.mp4');
         $file2 = UploadedFile::fake()->create('video2.mp4');
         $this->obj->uploadFiles([$file1, $file2]);
@@ -69,7 +69,6 @@ class UploadFilesUnitTest extends TestCase
 
     public function testDeleteFiles()
     {
-        \Storage::fake();
         $file1 = UploadedFile::fake()->create('video1.mp4');
         $file2 = UploadedFile::fake()->create('video2.mp4');
         $this->obj->deleteFiles([$file1, $file2]);

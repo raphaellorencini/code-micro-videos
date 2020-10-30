@@ -1,11 +1,28 @@
 steps:
+  - id: "Gerando fullcycle-teste-a4b805b30d14.json"
+    name: "gcr.io/cloud-builders/gcloud"
+    args:
+      - kms
+      - decrypt
+      - --ciphertext-file=./storage/credentials/google/fullcycle-teste-a4b805b30d14.json.enc
+      - --plaintext-file=./storage/credentials/google/fullcycle-teste-a4b805b30d14.json
+      - --location=global
+      - --keyring=code-micro-videos-key
+      - --key=service-account
+
   - id: "Rodando docker-compose"
     name: "gcr.io/$PROJECT_ID/docker-compose:1.25.5"
     args: ["-f", "docker-compose.prod.yaml", "up", "-d"]
+    env:
+      - GOOGLE_CLOUD_PROJECT_ID=$PROJECT_ID
+      - GOOGLE_CLOUD_KEY_FILE=fullcycle-teste-a4b805b30d14.json
+      - GOOGLE_CLOUD_STORAGE_BUCKET=rsl-code-micro-videos
+      - GOOGLE_CLOUD_STORAGE_API_URI=https://console.cloud.google.com/storage/browser/rsl-code-micro-videos
+      - TESTING_PROD=true
 
-  - id: "Rodando logs"
-    name: "gcr.io/cloud-builders/docker"
-    args: [ "logs", "micro-videos-app"]
+  # - id: "Rodando logs"
+  #   name: "gcr.io/cloud-builders/docker"
+  #   args: [ "logs", "micro-videos-app"]
 
   - id: "Chown in /var/www"
     name: "gcr.io/cloud-builders/docker"
