@@ -78,6 +78,46 @@ class VideoControllerTest extends TestCase
             ->assertJson($this->video->toArray());
     }
 
+    public function testInvalidationThumbField()
+    {
+        $this->assertInvalidationFile(
+            'thumb_file',
+            'jpg',
+            Video::THUMB_FILE_MAX_SIZE,
+            'image'
+        );
+    }
+
+    public function testInvalidationBannerField()
+    {
+        $this->assertInvalidationFile(
+            'banner_file',
+            'jpg',
+            Video::BANNER_FILE_MAX_SIZE,
+            'image'
+        );
+    }
+
+    public function testInvalidationTrailerField()
+    {
+        $this->assertInvalidationFile(
+            'trailer_file',
+            'mp4',
+            Video::TRAILER_FILE_MAX_SIZE,
+            'mimetypes', ['values' => 'video/mp4']
+        );
+    }
+
+    public function testInvalidationVideoField()
+    {
+        $this->assertInvalidationFile(
+            'video_file',
+            'mp4',
+            1,//Video::VIDEO_FILE_MAX_SIZE,
+            'mimetypes', ['values' => 'video/mp4']
+        );
+    }
+
     public function testInvalidationRequired()
     {
         $data = [
@@ -448,20 +488,5 @@ class VideoControllerTest extends TestCase
         $response->assertStatus(204);
         $this->assertNull(Video::find($this->video->id));
         $this->assertNotNull(Video::withTrashed()->find($this->video->id));
-    }
-
-    public function testInvalidationVideoField()
-    {
-        $this->assertInvalidationFile('video_file', 'mp4', 12, 'mimetypes', ['values' => 'video/mp4']);
-    }
-
-    public function xc()
-    {
-
-    }
-
-    public function xx()
-    {
-
     }
 }
