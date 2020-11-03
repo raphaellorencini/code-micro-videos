@@ -12,7 +12,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 
 class VideoCrudTest extends BaseVideoTestCase
 {
-
+    private $sendData = [];
     private $fileFieldsData = [];
 
     protected function setUp(): void
@@ -38,6 +38,8 @@ class VideoCrudTest extends BaseVideoTestCase
             "year_launched",
             'video_file',
             'thumb_file',
+            'banner_file',
+            'trailer_file',
             'opened',
             'rating',
             'duration',
@@ -48,35 +50,24 @@ class VideoCrudTest extends BaseVideoTestCase
         $this->assertEqualsCanonicalizing($keys, $videoKeys);
     }
 
-    public function testCreate()
+    public function testCreateWithBasicFields()
     {
 
-        $video = Video::create($this->data + $this->fileFieldsData);
+        $video = Video::create($this->data);
         $video->refresh();
+        $this->assertEquals(36, strlen($video->id));
+        $this->assertFalse($video->opened);
+        $this->assertDatabaseHas('videos', $this->data + ['opened' => false]);
 
-        $this->assertDatabaseHas("videos",
-            $this->data + $this->fileFieldsData + ["opened" => false]
-        );
-
-        $this->assertRegExp('/^\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12}$/', $video->id);
-
-
-        $video = Video::create(
-            ["title" => "test",
-                "description" => "description",
-                "year_launched" => 2008,
-                'rating' => "L",
-                "opened" => true,
-                'duration' => 190]
-        );
+        $video = Video::create($this->data + ['opened' => true]);
         $video->refresh();
         $this->assertTrue($video->opened);
+        $this->assertDatabaseHas('videos', $this->data + ['opened' => true]);
     }
 
     public function testCreateWithRelations()
     {
         $category = factory(Category::class)->create();
-        // dd($category->id);
         $genre = factory(Genre::class)->create();
         $video = Video::create($this->data +
             [
@@ -89,15 +80,18 @@ class VideoCrudTest extends BaseVideoTestCase
         $this->assertHasGenre($video->id, $genre->id);
     }
 
-    public function testUpdate()
+    public function testUpdateWithBasicFields()
     {
-        $video = $video = factory(Video::class)->create();
 
-        $video->update($this->data + $this->fileFieldsData);
+        $video = factory(Video::class)->create(['opened' => false]);
+        $video->update($this->data);
+        $this->assertFalse($video->opened);
+        $this->assertDatabaseHas('videos', $this->data + ['opened' => false]);
 
-        $this->assertDatabaseHas("videos",
-            $video->toArray() + $this->fileFieldsData + ["opened" => false]
-        );
+        $video = factory(Video::class)->create(['opened' => false]);
+        $video->update($this->data + ['opened' => true]);
+        $this->assertTrue($video->opened);
+        $this->assertDatabaseHas('videos', $this->data + ['opened' => true]);
     }
 
     public function testUpdateWithRelations()
@@ -106,12 +100,10 @@ class VideoCrudTest extends BaseVideoTestCase
         $video = factory(Video::class)->create();
         $category = factory(Category::class)->create();
         $genre = factory(Genre::class)->create();
-        $video->update($this->data +
-            [
-                "categories_id" => [$category->id],
-                "genres_id" => [$genre->id],
-            ]
-        );
+        $video->update($this->data + [
+            "categories_id" => [$category->id],
+            "genres_id" => [$genre->id],
+        ]);
 
         $this->assertHasCategory($video->id, $category->id);
         $this->assertHasGenre($video->id, $genre->id);
@@ -120,19 +112,14 @@ class VideoCrudTest extends BaseVideoTestCase
 
     public function testDelete()
     {
-        $video = $video = factory(Video::class)->create([
-            "description" => "test_description",
-        ]);
+
+        /** @var Video $video */
+        $video = factory(Video::class)->create();
         $video->delete();
+        $this->assertNull(Video::find($video->id));
 
-        $video_after_delete = Video::find($video->id);
-        $video_on_trash = Video::withTrashed()->find($video->id);
-        $this->assertNull($video_after_delete);
-        $this->assertNotNull($video_on_trash->updated_at);
-
-        $video_on_trash->forceDelete();
-        $video_on_trash_after_force_delete = Video::withTrashed()->find($video->id);
-        $this->assertNull($video_on_trash_after_force_delete);
+        $video->restore();
+        $this->assertNotNull(Video::find($video->id));
     }
 
     public function testRollbackCreate()

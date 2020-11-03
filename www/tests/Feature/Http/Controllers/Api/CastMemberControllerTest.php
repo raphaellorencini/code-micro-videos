@@ -25,12 +25,12 @@ class CastMemberControllerTest extends TestCase
         $this->routeUpdateParam = ['cast_member' => $this->cast_member->id];
     }
 
-    private function model()
+    protected function model()
     {
         return CastMember::class;
     }
 
-    private function route($routeName, array $params = [])
+    protected function route($routeName, array $params = [])
     {
         return route("api.cast_members.{$routeName}", $params);
     }

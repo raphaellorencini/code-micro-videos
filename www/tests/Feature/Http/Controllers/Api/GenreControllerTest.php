@@ -34,12 +34,12 @@ class GenreControllerTest extends TestCase
         ];
     }
 
-    private function model()
+    protected function model()
     {
         return Genre::class;
     }
 
-    private function route($routeName, array $params = [])
+    protected function route($routeName, array $params = [])
     {
         return route("api.genres.{$routeName}", $params);
     }

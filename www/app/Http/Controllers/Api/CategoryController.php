@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\CategoryCollection;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 
 class CategoryController extends BasicCrudController
@@ -11,6 +13,16 @@ class CategoryController extends BasicCrudController
         'description' => 'nullable',
         'is_active' => 'boolean',
     ];
+
+    protected function resource()
+    {
+        return CategoryResource::class;
+    }
+
+    protected function resourceCollection()
+    {
+        return $this->resource();
+    }
 
     protected function model()
     {
