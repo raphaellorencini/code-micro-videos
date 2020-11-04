@@ -354,7 +354,7 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
 
     public function testRollbackUpdate()
     {
-        $this->markTestSkipped();
+        ###$this->markTestSkipped();
         $controller = \Mockery::mock(VideoController::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
