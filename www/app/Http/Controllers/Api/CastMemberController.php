@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\CastMemberResource;
 use App\Models\CastMember;
 
 class CastMemberController extends BasicCrudController
@@ -14,6 +15,16 @@ class CastMemberController extends BasicCrudController
             'name' => 'required|max:255',
             'type' => 'required|in:'.implode(', ', CastMember::types()),
         ];
+    }
+
+    protected function resource()
+    {
+        return CastMemberResource::class;
+    }
+
+    protected function resourceCollection()
+    {
+        return $this->resource();
     }
 
     protected function model()

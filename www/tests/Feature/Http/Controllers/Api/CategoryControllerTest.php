@@ -16,6 +16,7 @@ class CategoryControllerTest extends TestCase
 
     private $category;
     private $serializedFields = [
+        'id',
         'name',
         'description',
         'is_active',
