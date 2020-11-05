@@ -73,7 +73,7 @@ class VideoController extends BasicCrudController
         $obj = $this->model()::create($validatedData);
         $obj->refresh();
         $resource = $this->resource();
-        return $resource($obj);
+        return new $resource($obj);
     }
 
     public function update(Request $request, $id)
@@ -83,6 +83,6 @@ class VideoController extends BasicCrudController
         $validatedData = $this->validate($request, $this->rulesUpdate());
         $obj->update($validatedData);
         $resource = $this->resource();
-        return $resource($obj);
+        return new $resource($obj);
     }
 }
