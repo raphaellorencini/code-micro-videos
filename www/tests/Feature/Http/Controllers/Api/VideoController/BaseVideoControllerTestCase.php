@@ -67,8 +67,9 @@ class BaseVideoControllerTestCase extends TestCase
         $data = array_key_exists(0, $data) ? $data[0] : $data;
         foreach ($fileFields as $field) {
             $file = $video->{$field};
+            $fileUrl = filled($file) ? \Storage::url($video->relativeFilePath($file)) : null;
             $this->assertEquals(
-                \Storage::url($video->relativeFilePath($file)),
+                $fileUrl,
                 $data[$field.'_url']
             );
         }
