@@ -3,7 +3,6 @@
 namespace Tests\Prod\Models\Traits;
 
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Config;
 use PHPUnit\Framework\TestCase;
 use Tests\Stubs\Models\UploadFilesStub;
 use Tests\Traits\TestProd;
@@ -19,7 +18,7 @@ class UploadFilesProdTest extends TestCase
     {
         parent::setUp();
         $this->skipTestIfNotProd();
-        Config::set('filesystems.default', 'gcs');
+        config(['filesystems.default' => 'gcs']);
         $this->obj = new UploadFilesStub();
         $this->deleteAllFiles();
     }
