@@ -4,8 +4,8 @@ steps:
     args:
       - kms
       - decrypt
-      - --ciphertext-file=./storage/credentials/google/fullcycle-teste-a4b805b30d14.json.enc
-      - --plaintext-file=./storage/credentials/google/fullcycle-teste-a4b805b30d14.json
+      - --ciphertext-file=./www/storage/credentials/google/fullcycle-teste-a4b805b30d14.json.enc
+      - --plaintext-file=./www/storage/credentials/google/fullcycle-teste-a4b805b30d14.json
       - --location=global
       - --keyring=code-micro-videos-key
       - --key=service-account

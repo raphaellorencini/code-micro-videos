@@ -320,7 +320,6 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
 
     public function testRollbackStore()
     {
-        ###$this->markTestSkipped();
         $controller = \Mockery::mock(VideoController::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
@@ -333,7 +332,7 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
             ->withAnyArgs()
             ->andReturn([]);
 
-        $controller->shouldReceive('handleRelations')
+        $controller->shouldReceive('addRuleIfGenreHasCategories')
             ->once()
             ->andThrow(new TestException());
 
@@ -355,7 +354,6 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
 
     public function testRollbackUpdate()
     {
-        ###$this->markTestSkipped();
         $controller = \Mockery::mock(VideoController::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
@@ -374,7 +372,7 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
             ->withAnyArgs()
             ->andReturn([]);
 
-        $controller->shouldReceive('handleRelations')
+        $controller->shouldReceive('addRuleIfGenreHasCategories')
             ->once()
             ->andThrow(new TestException());
 
