@@ -2,10 +2,8 @@
 
 namespace Tests\Unit\Models\Traits;
 
-use App\Models\Traits\Uuid;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\UploadedFile;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 use Tests\Stubs\Models\UploadFilesStub;
 
 class UploadFilesUnitTest extends TestCase
@@ -15,7 +13,6 @@ class UploadFilesUnitTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
         $this->obj = new UploadFilesStub();
     }
 

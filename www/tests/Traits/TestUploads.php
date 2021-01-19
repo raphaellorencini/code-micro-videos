@@ -2,6 +2,7 @@
 
 namespace Tests\Traits;
 
+use App\Models\Traits\UploadFiles;
 use Illuminate\Http\UploadedFile;
 
 trait TestUploads
@@ -11,11 +12,11 @@ trait TestUploads
         $routes = [
             [
                 'method' => 'POST',
-                'route' => $this->route('store'),
+                'route' => route('api.videos.store'),
             ],
             [
                 'method' => 'PUT',
-                'route' => $this->route('update', $this->routeUpdateParam),
+                'route' => route('api.videos.update', $this->routeUpdateParam),
             ],
         ];
 
@@ -26,11 +27,19 @@ trait TestUploads
             ]);
             $this->assertsInvalidationFields($response, [$field], $rule, $ruleParams);
 
-            $file = UploadedFile::fake()->create("{$field}.{$extension}")->size($maxSize + 1);
+            $file = UploadedFile::fake()->create("{$field}.{$extension}")->size($maxSize + 10);
             $response = $this->json($route['method'], $route['route'], [
                 $field => $file,
             ]);
             $this->assertsInvalidationFields($response, [$field], 'max.file', ['max' => $maxSize]);
+        }
+    }
+
+    protected function assertFilesExistsInStorage($model, array $files)
+    {
+        /** @var UploadFiles $model */
+        foreach ($files as $file) {
+            \Storage::assertExists($model->relativeFilePath($file->hashName()));
         }
     }
 }

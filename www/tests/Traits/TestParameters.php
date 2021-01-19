@@ -6,5 +6,5 @@ namespace Tests\Traits;
 
 trait TestParameters
 {
-    private $routeUpdateParam;
+    protected $routeUpdateParam;
 }
