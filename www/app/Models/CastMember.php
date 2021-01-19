@@ -32,7 +32,7 @@ class CastMember extends Model
         'type',
     ];
 
-    public static function types()
+    public static function types(): array
     {
         return [
             self::TYPE_DIRECTOR,

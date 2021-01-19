@@ -7,6 +7,9 @@ use App\Models\CastMember;
 
 class CastMemberController extends BasicCrudController
 {
+    /**
+     * @var string[]
+     */
     private $rules;
 
     public function __construct()
