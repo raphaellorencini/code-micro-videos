@@ -8,13 +8,17 @@ services:
           context: .
           target: dev
         container_name: micro-videos-app
-        entrypoint: dockerize -template /templates/.env:.env -template /templates/.env.testing:.env.testing -wait tcp://db:3306 -timeout 40s /entrypoint.sh
+        entrypoint: dockerize -template /templates/.env:/var/www/backend/.env -template /templates/.env.testing:/var/www/backend/.env.testing -wait tcp://db:3306 -timeout 40s /entrypoint.sh
+        ports:
+            - "3000:3000"
+            - "35729:35729"
         environment:
             - _DB_HOST=db
             - _DB_DATABASE=code_micro_videos
             - _DB_USERNAME=root
             - _DB_PASSWORD=root
             - _TEST_DB_DATABASE=code_micro_videos_test
+            - CHOKIDAR_USEPOLLING=true
         volumes:
             - ./www:/var/www
         networks:

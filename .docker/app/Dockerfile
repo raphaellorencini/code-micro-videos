@@ -1,4 +1,4 @@
-FROM php:7.3.6-fpm-alpine3.9 as base
+FROM php:7.3-fpm-alpine3.10 as base
 
 RUN apk add --no-cache shadow \
     openssl \
@@ -17,6 +17,8 @@ RUN docker-php-ext-install -j$(nproc) gd
 RUN touch /home/www-data/.bashrc | echo "PS1='\w\$ '" >> /home/www-data/.bashrc
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+RUN npm config set cache /var/www/.npm-cache --global
 
 RUN usermod -u 1000 www-data
 
